@@ -113,7 +113,7 @@ public class EditableBufferedReader extends BufferedReader {
                                     break;
 
                                 case(68):
-                                    //System.out.print(button);
+                                    System.out.print(button);
                                     actual = linia.left(actual);
                                     break;
 
