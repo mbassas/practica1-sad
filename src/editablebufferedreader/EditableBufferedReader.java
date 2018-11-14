@@ -31,7 +31,7 @@ public class EditableBufferedReader extends BufferedReader {
     public static final int RIGHT = 39;
     public static final int ENTER = 13;
     public static final int BACKSPACE = 127;
-    public static final int SUPR = 8;
+    public static final int SUPR = 126;
     public static final int ESC = 27;
     
     public static void main(String[] args) throws IOException {

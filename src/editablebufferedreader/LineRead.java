@@ -73,14 +73,20 @@ public class LineRead {
     }
 
      public void suprimeix (int actual){
-         if(actual<this.mostraTamany()){
+
+         if (this.liniaEscrita.length() == 0 || actual >= this.liniaEscrita.length()) return;
+
+         String sor1 = liniaEscrita.substring(0, actual);
+         String sor2 = liniaEscrita.substring(actual+1);
+         liniaEscrita = sor1 + sor2;
+        /*if(actual<this.mostraTamany()){
                 String subs1 = liniaEscrita.substring(0,actual);
                 if (actual+2 < this.tamany){
                     String subs2 = liniaEscrita.substring(actual+2, this.tamany);
                     liniaEscrita = subs1+subs2;
                 } else liniaEscrita = subs1;
           } else if(actual==liniaEscrita.length()-1)
-                liniaEscrita = liniaEscrita.substring(0,actual);
+                liniaEscrita = liniaEscrita.substring(0,actual);*/
      }
 
      public int left (int actual){
