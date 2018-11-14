@@ -7,6 +7,7 @@
 package editablebufferedreader;
 
 import editablebufferedreader.LineRead;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,7 +16,6 @@ import java.lang.StringBuilder;
 
 
 /**
- *
  * @author lsadusr12
  */
 public class EditableBufferedReader extends BufferedReader {
@@ -23,8 +23,8 @@ public class EditableBufferedReader extends BufferedReader {
     /**
      * @param args the command line arguments
      */
-    
-    public static final int INSERT = 26;
+
+    public static final int INSERT = 50;
     public static final int INICIO = 72;
     public static final int FIN = 70;
     public static final int LEFT = 68;
@@ -33,149 +33,136 @@ public class EditableBufferedReader extends BufferedReader {
     public static final int BACKSPACE = 127;
     public static final int SUPR = 126;
     public static final int ESC = 27;
-    
+
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
-        
-        
+
+
         EditableBufferedReader br = new EditableBufferedReader(new InputStreamReader(System.in));
         String str = "";
-        
+
         try {
             str = br.readLine();
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         System.out.println("\nline is: " + str);
-        
+
     }
 
     public EditableBufferedReader(Reader in) {
         super(in);
     }
-    
-    public void setRaw() throws IOException{
-        String [] cmdRaw = {"/bin/sh", "-c", "stty -echo raw < /dev/tty"}; 
-        try{
+
+    public void setRaw() throws IOException {
+        String[] cmdRaw = {"/bin/sh", "-c", "stty -echo raw < /dev/tty"};
+        try {
             Runtime.getRuntime().exec(cmdRaw).waitFor();
-        }catch (InterruptedException e){
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    public void setCursor(int position) throws IOException {
+    private String BLINKING_BAR = "\033[5 q";
+    private String BLINKING_BLOCK = "\033[1 q";
+    public void setCursor(int position, boolean insertMode) throws IOException {
         final String foo = "\u001b[1;" + Integer.toString(position + 1) + "H";
         System.out.print(foo);
 
+        System.out.print(insertMode ? BLINKING_BLOCK : BLINKING_BAR);
+
     }
-    
-    public void unsetRaw() throws IOException{
-          String [] cooked = {"/bin/sh", "-c", "stty -raw echo < /dev/tty"}; 
-        try{
+
+    public void unsetRaw() throws IOException {
+        String[] cooked = {"/bin/sh", "-c", "stty -raw echo < /dev/tty"};
+        try {
             Runtime.getRuntime().exec(cooked).waitFor();
-        }catch (InterruptedException e){
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
-     
-    
-    @Override
-     public int read() throws IOException{
-         int llegit = System.in.read();
-         return llegit;
-     }
-    
-     
-     public String readLine() throws IOException{
 
-        String [] tamanyConsola = {"/bin/sh", "-c", "tput cols < /dev/tty"};
+
+    @Override
+    public int read() throws IOException {
+        int llegit = System.in.read();
+        return llegit;
+    }
+
+
+    public String readLine() throws IOException {
+
+        String[] tamanyConsola = {"/bin/sh", "-c", "tput cols < /dev/tty"};
         int tamany = 300; //aconseguir màxim
         LineRead linia = new LineRead(tamany);
-        try{
+        try {
             int button = 0, actual = 0;
+            boolean insertMode = false;
             this.setRaw();
-            //String sortida = Character.toString((char)button);
-            boolean insert = false;
+            linia.clearScreen();
+            setCursor(actual, insertMode);
 
-            //while (!sortida.equals("\r")){
-            while (button != ENTER){
-                    button = this.read();
-                    switch (button) {
+            while (button != ENTER) {
+                button = this.read();
+                switch (button) {
 
-                        case(ESC):
-                            button = this.read();
-                            button = this.read();
+                    case (ESC):
+                        button = this.read();
+                        button = this.read();
 
-                            switch (button){
-                                case(FIN):
-                                    actual = linia.goToEnd();
-                                    break;
+                        switch (button) {
+                            case (FIN):
+                                actual = linia.goToEnd();
+                                break;
 
-                                case(INICIO):
-                                    actual = 0;
-                                    break;
+                            case (INICIO):
+                                actual = 0;
+                                break;
 
-                                case(RIGHT):
-                                    //System.out.print(button);
-                                    actual = linia.right(actual);
-                                    break;
+                            case (RIGHT):
+                                actual = linia.right(actual);
+                                break;
 
-                                case(LEFT):
-                                    //System.out.print(button);
-                                    actual = linia.left(actual);
-                                    break;
+                            case (LEFT):
+                                actual = linia.left(actual);
+                                break;
 
-                                default:
-                                    break;
-                            }
-                            break;
+                            case (INSERT):
+                                button = this.read();
+                                insertMode = linia.toggleInsertMode();
+                                break;
 
-                        case (BACKSPACE): // Esborrar
-                            if (actual >0 || linia.mostraTamany() > 0){
-                                //System.out.print("HERE");
-                                linia.esborra(actual);
-                                actual = linia.decPosicio(actual);
-                            }
-                            
-                        break; 
-                            
-                        case (SUPR): //suprimir
-                              if (actual > 0 || linia.mostraTamany() > 0)
-                                    linia.suprimeix(actual);
+                            default:
+                                break;
+                        }
                         break;
 
-                        
-                          case(INSERT): // insert
-                              insert = linia.insert(insert);
-                          break;
-                          case(INICIO): //inicio
-                              actual = linia.inicio();
-                          break;
-                       
-                          case (FIN): // fin
-                              actual = linia.fin();
-                          break;
-                              
-                         // case (ENTER):
-                         //     System.out.println("caracola");
-                         //break;
-                        
-                          default:
-                              linia.escriu(button, actual, insert );
-                              actual = linia.incPosicio(actual);
-                              break;
+                    case (BACKSPACE):
+                        linia.esborra(actual);
+                        actual = linia.decPosicio(actual);
 
-                    }
+                        break;
+
+                    case (SUPR):
+                        linia.suprimeix(actual);
+                        break;
+
+                    default:
+                        linia.escriu(button, actual);
+                        actual = linia.incPosicio(actual);
+                        break;
+
+                }
 
 
                 linia.clearScreen();
                 linia.mostraLinia();
-                setCursor(actual);
+                setCursor(actual, insertMode);
             }
 
-
-            return linia.mostraLinia();
-        }finally{
+            linia.clearScreen();
+            return linia.getContent();
+        } finally {
             this.unsetRaw();
         }
     }
