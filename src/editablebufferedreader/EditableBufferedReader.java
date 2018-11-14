@@ -62,6 +62,12 @@ public class EditableBufferedReader extends BufferedReader {
             e.printStackTrace();
         }
     }
+
+    public void setCursor(int position) throws IOException {
+        final String foo = "\u001b[1;" + Integer.toString(position + 1) + "H";
+        System.out.print(foo);
+
+    }
     
     public void unsetRaw() throws IOException{
           String [] cooked = {"/bin/sh", "-c", "stty -raw echo < /dev/tty"}; 
@@ -94,7 +100,7 @@ public class EditableBufferedReader extends BufferedReader {
             //while (!sortida.equals("\r")){
             while (button != ENTER){
                     button = this.read();
-                    switch (button){
+                    switch (button) {
 
                         case(ESC):
                             button = this.read();
@@ -120,6 +126,7 @@ public class EditableBufferedReader extends BufferedReader {
                                 default:
                                     break;
                             }
+                            break;
 
                         case (BACKSPACE): // Esborrar
                             if (actual >0 || linia.mostraTamany() > 0){
@@ -158,9 +165,16 @@ public class EditableBufferedReader extends BufferedReader {
 
                     }
 
-                 
-            }   
-            return linia.mostraLinia();
+
+                linia.clearScreen();
+                linia.mostraLinia();
+                setCursor(actual);
+            }
+
+
+            linia.mostraLinia();
+
+            return "kaka";
         }finally{
             this.unsetRaw();
         }

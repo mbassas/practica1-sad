@@ -41,6 +41,7 @@ public class LineRead {
     }
     
      public String mostraLinia (){
+         System.out.print(this.liniaEscrita);
          return this.liniaEscrita;
      }
      
@@ -50,57 +51,68 @@ public class LineRead {
      
      public void esborra(int actual){
 
-        if(this.liniaEscrita.length() == 0 || actual == 0) return;
+        if(this.liniaEscrita.length() == 0) return;
 
-        this.liniaEscrita = this.liniaEscrita.substring(0, actual);
-
-          /*if(this.mostraTamany() > 0 && actual == this.liniaEscrita.length() - 1){
+        this.liniaEscrita = this.liniaEscrita.substring(0, this.liniaEscrita.length() - 1);
+          /*if (this.mostraTamany()>0 && actual == this.mostraTamany()){
                 this.liniaEscrita = this.liniaEscrita.substring(0, this.liniaEscrita.length()-1);
-                               
+
           } else if (this.mostraTamany()>0 && actual!=0){
                 String sub1 = this.liniaEscrita.substring(0, actual-1);
-                //System.out.print("AQUI");
-                String sub2 = "";//this.liniaEscrita.substring(actual+1);
+                String sub2 = this.liniaEscrita.substring(actual+1, this.tamany);
                 this.liniaEscrita = sub1 + sub2;
            }*/
      }
-     
+
+    public void clearScreen () {
+        final String ANSI_CLS = "\u001b[2J";
+        final String ANSI_HOME = "\u001b[H";
+        System.out.print(ANSI_CLS + ANSI_HOME);
+        System.out.flush();
+    }
+
      public void suprimeix (int actual){
          if(actual<this.mostraTamany()){
                 String subs1 = liniaEscrita.substring(0,actual);
                 if (actual+2 < this.tamany){
-                    String subs2 = liniaEscrita.substring(actual+2);
+                    String subs2 = liniaEscrita.substring(actual+2, this.tamany);
                     liniaEscrita = subs1+subs2;
                 } else liniaEscrita = subs1;
           } else if(actual==liniaEscrita.length()-1)
                 liniaEscrita = liniaEscrita.substring(0,actual);
      }
-     
+
      public int left (int actual){
          if (actual == 0) return 0;
          else return this.decPosicio(actual);
      }
-     
+
      public int right (int actual){
-         if (actual == liniaEscrita.length()) return liniaEscrita.length();
-         else return this.incPosicio(actual);
+        System.out.print(actual+ "++++");
+        System.out.print(this.tamany+ " jiji");
+         if (actual == this.tamany) return this.tamany;
+         else {
+             int happy = this.incPosicio(actual);
+             System.out.print(happy+ " uuuh");
+
+             return this.incPosicio(actual);
+         }
      }
-     
+
      public boolean insert (boolean insert){
          return !insert;
      }
-     
+
      public int inicio(){
          return  0;
      }
-     
+
      public int fin(){
          return this.tamany;
      }
-     
+
      public void escriu (int button, int actual, boolean insert){
          String sortida = Character.toString((char)button);
-         System.out.print(sortida);
          //System.out.println(button);
          if (!insert) {
              //System.out.println(liniaEscrita.length());
