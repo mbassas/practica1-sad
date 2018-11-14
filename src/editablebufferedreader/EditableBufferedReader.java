@@ -25,10 +25,10 @@ public class EditableBufferedReader extends BufferedReader {
      */
     
     public static final int INSERT = 26;
-    public static final int INICIO = 2;
-    public static final int FIN = 3;
-    public static final int LEFT = 37;
-    public static final int RIGHT = 39;
+    public static final int INICIO = 72;
+    public static final int FIN = 70;
+    public static final int LEFT = 68;
+    public static final int RIGHT = 67;
     public static final int ENTER = 13;
     public static final int BACKSPACE = 127;
     public static final int SUPR = 126;
@@ -107,18 +107,20 @@ public class EditableBufferedReader extends BufferedReader {
                             button = this.read();
 
                             switch (button){
-                                case(65):
+                                case(FIN):
+                                    actual = linia.goToEnd();
                                     break;
 
-                                case(66):
+                                case(INICIO):
+                                    actual = 0;
                                     break;
 
-                                case(67):
+                                case(RIGHT):
                                     //System.out.print(button);
                                     actual = linia.right(actual);
                                     break;
 
-                                case(68):
+                                case(LEFT):
                                     //System.out.print(button);
                                     actual = linia.left(actual);
                                     break;
@@ -172,9 +174,7 @@ public class EditableBufferedReader extends BufferedReader {
             }
 
 
-            linia.mostraLinia();
-
-            return "kaka";
+            return linia.mostraLinia();
         }finally{
             this.unsetRaw();
         }
