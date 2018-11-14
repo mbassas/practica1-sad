@@ -113,14 +113,13 @@ public class LineRead {
 
      public void escriu (int button, int actual, boolean insert){
          String sortida = Character.toString((char)button);
-         //System.out.println(button);
+
          if (!insert) {
-             //System.out.println(liniaEscrita.length());
+
              if (liniaEscrita.length() > 0 && actual != this.tamany) {
                  if (actual != liniaEscrita.length()) {
-                     System.out.println("Actual:"+ actual+ "   Tamaño:"+liniaEscrita.length());
                      String sor1 = liniaEscrita.substring(0, actual);
-                     String sor2 = liniaEscrita.substring(actual + 1, liniaEscrita.length() - 1);
+                     String sor2 = liniaEscrita.substring(actual);
                      liniaEscrita = sor1 + sortida + sor2;
                  } else {
                      liniaEscrita += sortida;
