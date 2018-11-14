@@ -51,9 +51,12 @@ public class LineRead {
      
      public void esborra(int actual){
 
-        if(this.liniaEscrita.length() == 0) return;
+        if (actual == 0 || this.liniaEscrita.length() == 0) return;
 
-        this.liniaEscrita = this.liniaEscrita.substring(0, this.liniaEscrita.length() - 1);
+         String sor1 = liniaEscrita.substring(0, actual - 1);
+         String sor2 = liniaEscrita.substring(actual);
+         liniaEscrita = sor1 + sor2;
+
           /*if (this.mostraTamany()>0 && actual == this.mostraTamany()){
                 this.liniaEscrita = this.liniaEscrita.substring(0, this.liniaEscrita.length()-1);
 
