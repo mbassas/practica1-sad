@@ -22,9 +22,8 @@ public class LineRead {
     
     public int incPosicio(int actual){
         int aux = actual;
-        if(actual < this.tamany){
-           aux++;
-            return aux;
+        if(actual < this.liniaEscrita.length()){
+            return ++aux;
         }else{
             return aux;
         }
@@ -32,10 +31,9 @@ public class LineRead {
     
     public int decPosicio(int actual){
         int aux = actual;
-        if(actual == 0){
-            return aux;
+        if(actual > 0){
+            return --aux;
         }else{
-            aux --;
             return aux;
         }
     }
