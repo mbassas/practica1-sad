@@ -16,38 +16,38 @@ public class LineRead {
     int tamany;
     String liniaEscrita;
     boolean insertMode;
-    int actual;
-    
+    int cursor;
+
     public LineRead(int N) {
         this.tamany = N;
         this.insertMode = false;
-        this.actual = 0;
+        this.cursor = 0;
         this.liniaEscrita = "";
 
     }
 
-    public void incPosicio() {
-        if (this.actual >= this.liniaEscrita.length()) return;
-        this.actual++;
+    public void incPosition() {
+        if (this.cursor >= this.liniaEscrita.length()) return;
+        this.cursor++;
     }
 
-    public void decPosicio() {
-        if (this.actual <= 0) return;
-        this.actual--;
+    public void decPosition() {
+        if (this.cursor <= 0) return;
+        this.cursor--;
     }
 
     private String BLINKING_BAR = "\033[5 q";
     private String BLINKING_BLOCK = "\033[1 q";
 
     public void setCursor() throws IOException {
-        final String foo = "\u001b[1;" + Integer.toString(this.actual + 1) + "H";
+        final String foo = "\u001b[1;" + Integer.toString(this.cursor + 1) + "H";
         System.out.print(foo);
 
         System.out.print(this.insertMode ? BLINKING_BLOCK : BLINKING_BAR);
 
     }
 
-    public void mostraLinia() {
+    public void showLine() {
         System.out.print(this.liniaEscrita);
     }
 
@@ -55,12 +55,12 @@ public class LineRead {
         return this.liniaEscrita;
     }
 
-    public void esborra() {
+    public void delete() {
 
-        if (this.actual == 0 || this.liniaEscrita.length() == 0) return;
+        if (this.cursor == 0 || this.liniaEscrita.length() == 0) return;
 
-        String sor1 = this.liniaEscrita.substring(0, this.actual - 1);
-        String sor2 = this.liniaEscrita.substring(this.actual);
+        String sor1 = this.liniaEscrita.substring(0, this.cursor - 1);
+        String sor2 = this.liniaEscrita.substring(this.cursor);
         this.liniaEscrita = sor1 + sor2;
     }
 
@@ -71,21 +71,21 @@ public class LineRead {
         System.out.flush();
     }
 
-    public void suprimeix() {
+    public void suppress() {
 
-        if (this.liniaEscrita.length() == 0 || this.actual >= this.liniaEscrita.length()) return;
+        if (this.liniaEscrita.length() == 0 || this.cursor >= this.liniaEscrita.length()) return;
 
-        String sor1 = this.liniaEscrita.substring(0, this.actual);
-        String sor2 = this.liniaEscrita.substring(this.actual + 1);
+        String sor1 = this.liniaEscrita.substring(0, this.cursor);
+        String sor2 = this.liniaEscrita.substring(this.cursor + 1);
         this.liniaEscrita = sor1 + sor2;
     }
 
     public void goHome() {
-        this.actual = 0;
+        this.cursor = 0;
     }
 
     public void goToEnd() {
-        this.actual = this.liniaEscrita.length();
+        this.cursor = this.liniaEscrita.length();
     }
 
     public void toggleInsertMode() {
@@ -93,23 +93,23 @@ public class LineRead {
     }
 
     public void left() {
-        if (this.actual == 0) return;
+        if (this.cursor == 0) return;
 
-        this.decPosicio();
+        this.decPosition();
     }
 
     public void right() {
-        if (this.actual == this.tamany) return;
+        if (this.cursor == this.tamany) return;
 
-        this.incPosicio();
+        this.incPosition();
     }
 
-    public void escriu(int button) {
+    public void write(int button) {
         String sortida = Character.toString((char) button);
 
-        if (this.actual < this.liniaEscrita.length()) {
-            String sor1 = this.liniaEscrita.substring(0, this.actual);
-            String sor2 = this.liniaEscrita.substring(this.insertMode ? this.actual + 1 : this.actual);
+        if (this.cursor < this.liniaEscrita.length()) {
+            String sor1 = this.liniaEscrita.substring(0, this.cursor);
+            String sor2 = this.liniaEscrita.substring(this.insertMode ? this.cursor + 1 : this.cursor);
             this.liniaEscrita = sor1 + sortida + sor2;
         } else {
             this.liniaEscrita += sortida;

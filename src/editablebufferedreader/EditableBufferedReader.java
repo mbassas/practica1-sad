@@ -73,19 +73,19 @@ public class EditableBufferedReader extends BufferedReader {
 
     @Override
     public int read() throws IOException {
-        int llegit = System.in.read();
-        return llegit;
+        int read = System.in.read();
+        return read;
     }
 
     public String readLine() throws IOException {
-        String[] tamanyConsola = {"/bin/sh", "-c", "tput cols < /dev/tty"};
-        int tamany = 300; //aconseguir màxim
-        LineRead linia = new LineRead(tamany);
+        String[] consoleSize = {"/bin/sh", "-c", "tput cols < /dev/tty"};
+        int size = 300; //aconseguir màxim
+        LineRead line = new LineRead(size);
         try {
             int button = 0;
             this.setRaw();
-            linia.clearScreen();
-            linia.setCursor();
+            line.clearScreen();
+            line.setCursor();
 
             while (button != ENTER) {
                 button = this.read();
@@ -98,24 +98,24 @@ public class EditableBufferedReader extends BufferedReader {
 
                         switch (button) {
                             case (FIN):
-                                linia.goToEnd();
+                                line.goToEnd();
                                 break;
 
                             case (INICIO):
-                                linia.goHome();
+                                line.goHome();
                                 break;
 
                             case (RIGHT):
-                                linia.right();
+                                line.right();
                                 break;
 
                             case (LEFT):
-                                linia.left();
+                                line.left();
                                 break;
 
                             case (INSERT):
                                 button = this.read();
-                                linia.toggleInsertMode();
+                                line.toggleInsertMode();
                                 break;
 
                             default:
@@ -124,28 +124,28 @@ public class EditableBufferedReader extends BufferedReader {
                         break;
 
                     case (BACKSPACE):
-                        linia.esborra();
-                        linia.decPosicio();
+                        line.delete();
+                        line.decPosition();
 
                         break;
 
                     case (SUPR):
-                        linia.suprimeix();
+                        line.suppress();
                         break;
 
                     default:
-                        linia.escriu(button);
-                        linia.incPosicio();
+                        line.write(button);
+                        line.incPosition();
                         break;
                 }
 
-                linia.clearScreen();
-                linia.mostraLinia();
-                linia.setCursor();
+                line.clearScreen();
+                line.showLine();
+                line.setCursor();
             }
 
-            linia.clearScreen();
-            return linia.getContent();
+            line.clearScreen();
+            return line.getContent();
 
         } finally {
 
