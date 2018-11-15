@@ -7,7 +7,6 @@
 package editablebufferedreader;
 
 import editablebufferedreader.LineRead;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -63,16 +62,6 @@ public class EditableBufferedReader extends BufferedReader {
         }
     }
 
-    private String BLINKING_BAR = "\033[5 q";
-    private String BLINKING_BLOCK = "\033[1 q";
-    public void setCursor(int position, boolean insertMode) throws IOException {
-        final String foo = "\u001b[1;" + Integer.toString(position + 1) + "H";
-        System.out.print(foo);
-
-        System.out.print(insertMode ? BLINKING_BLOCK : BLINKING_BAR);
-
-    }
-
     public void unsetRaw() throws IOException {
         String[] cooked = {"/bin/sh", "-c", "stty -raw echo < /dev/tty"};
         try {
@@ -82,28 +71,25 @@ public class EditableBufferedReader extends BufferedReader {
         }
     }
 
-
     @Override
     public int read() throws IOException {
         int llegit = System.in.read();
         return llegit;
     }
 
-
     public String readLine() throws IOException {
-
         String[] tamanyConsola = {"/bin/sh", "-c", "tput cols < /dev/tty"};
         int tamany = 300; //aconseguir màxim
         LineRead linia = new LineRead(tamany);
         try {
-            int button = 0, actual = 0;
-            boolean insertMode = false;
+            int button = 0;
             this.setRaw();
             linia.clearScreen();
-            setCursor(actual, insertMode);
+            linia.setCursor();
 
             while (button != ENTER) {
                 button = this.read();
+
                 switch (button) {
 
                     case (ESC):
@@ -112,24 +98,24 @@ public class EditableBufferedReader extends BufferedReader {
 
                         switch (button) {
                             case (FIN):
-                                actual = linia.goToEnd();
+                                linia.goToEnd();
                                 break;
 
                             case (INICIO):
-                                actual = 0;
+                                linia.goHome();
                                 break;
 
                             case (RIGHT):
-                                actual = linia.right(actual);
+                                linia.right();
                                 break;
 
                             case (LEFT):
-                                actual = linia.left(actual);
+                                linia.left();
                                 break;
 
                             case (INSERT):
                                 button = this.read();
-                                insertMode = linia.toggleInsertMode();
+                                linia.toggleInsertMode();
                                 break;
 
                             default:
@@ -138,31 +124,31 @@ public class EditableBufferedReader extends BufferedReader {
                         break;
 
                     case (BACKSPACE):
-                        linia.esborra(actual);
-                        actual = linia.decPosicio(actual);
+                        linia.esborra();
+                        linia.decPosicio();
 
                         break;
 
                     case (SUPR):
-                        linia.suprimeix(actual);
+                        linia.suprimeix();
                         break;
 
                     default:
-                        linia.escriu(button, actual);
-                        actual = linia.incPosicio(actual);
+                        linia.escriu(button);
+                        linia.incPosicio();
                         break;
-
                 }
-
 
                 linia.clearScreen();
                 linia.mostraLinia();
-                setCursor(actual, insertMode);
+                linia.setCursor();
             }
 
             linia.clearScreen();
             return linia.getContent();
+
         } finally {
+
             this.unsetRaw();
         }
     }
