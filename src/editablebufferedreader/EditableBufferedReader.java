@@ -78,14 +78,11 @@ public class EditableBufferedReader extends BufferedReader {
     }
 
     public String readLine() throws IOException {
-        String[] consoleSize = {"/bin/sh", "-c", "tput cols < /dev/tty"};
-        int size = 300; //aconseguir màxim
-        LineRead line = new LineRead(size);
+
+        LineRead line = new LineRead();
         try {
             int button = 0;
             this.setRaw();
-            line.clearScreen();
-            line.setCursor();
 
             while (button != ENTER) {
                 button = this.read();

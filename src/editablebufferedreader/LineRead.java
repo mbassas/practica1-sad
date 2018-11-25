@@ -18,13 +18,37 @@ public class LineRead {
     boolean insertMode;
     int cursor;
 
-    public LineRead(int N) {
-        this.tamany = N;
+    public LineRead() {
         this.insertMode = false;
         this.cursor = 0;
         this.liniaEscrita = "";
 
+        updateSize();
     }
+
+    private void updateSize() {
+        this.tamany = getTerminalSize();
+    }
+
+    private int getTerminalSize(){
+        String[] consoleSize = {"/bin/sh", "-c", "tput cols < /dev/tty"};
+        try {
+            Process p = Runtime.getRuntime().exec(consoleSize);
+            p.waitFor();
+
+            byte[] b = new byte[10];
+            int bytesRead = p.getInputStream().read(b);
+            if(bytesRead > 0) {
+                String output = new String(b).replace("\n", "").trim();
+                return Integer.parseInt(output);
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 100; //default total columns value
+    }
+    
 
     public void incPosition() {
         if (this.cursor >= this.liniaEscrita.length()) return;
@@ -40,11 +64,11 @@ public class LineRead {
     private String BLINKING_BLOCK = "\033[1 q";
 
     public void setCursor() throws IOException {
-        final String foo = "\u001b[1;" + Integer.toString(this.cursor + 1) + "H";
-        System.out.print(foo);
+        final String SET_CURSOR_BEGINNNING = "\033[" + this.tamany +  "D";
+        final String SET_CURSOR_POSITION = "\033[" + Integer.toString(this.cursor) + "C";
+        System.out.print(SET_CURSOR_BEGINNNING + SET_CURSOR_POSITION);
 
         System.out.print(this.insertMode ? BLINKING_BLOCK : BLINKING_BAR);
-
     }
 
     public void showLine() {
@@ -65,10 +89,10 @@ public class LineRead {
     }
 
     public void clearScreen() {
-        final String ANSI_CLS = "\u001b[2J";
-        final String ANSI_HOME = "\u001b[H";
-        System.out.print(ANSI_CLS + ANSI_HOME);
-        System.out.flush();
+        final String ANSI_CLEAR_LINE = "\033[K";
+        final String SET_CURSOR_BEGINNNING = "\033[" + this.tamany +  "D"; //SHOUL BE COLS
+        System.out.print(SET_CURSOR_BEGINNNING);
+        System.out.print(ANSI_CLEAR_LINE);
     }
 
     public void suppress() {
@@ -105,6 +129,8 @@ public class LineRead {
     }
 
     public void write(int button) {
+        if(this.liniaEscrita.length() == this.tamany) return;
+
         String sortida = Character.toString((char) button);
 
         if (this.cursor < this.liniaEscrita.length()) {
