@@ -54,21 +54,26 @@ public class EditableBufferedReader extends BufferedReader {
     }
 
     public void setRaw() throws IOException {
-        String[] cmdRaw = {"/bin/sh", "-c", "stty -echo raw < /dev/tty"};
-        try {
-            Runtime.getRuntime().exec(cmdRaw).waitFor();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        run("stty -echo raw < /dev/tty");
     }
 
     public void unsetRaw() throws IOException {
-        String[] cooked = {"/bin/sh", "-c", "stty -raw echo < /dev/tty"};
+        run("stty -raw echo < /dev/tty");
+    }
+    
+    public byte[] run(String command) throws IOException {
+        String[] cmdRaw = {"/bin/sh", "-c", command};
         try {
-            Runtime.getRuntime().exec(cooked).waitFor();
+            Process p = Runtime.getRuntime().exec(cmdRaw);
+            p.waitFor();
+
+            byte[] b = new byte[512];
+            p.getInputStream().read(b);
+            return b;
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     @Override

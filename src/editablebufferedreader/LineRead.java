@@ -66,7 +66,11 @@ public class LineRead {
     public void setCursor() throws IOException {
         final String SET_CURSOR_BEGINNNING = "\033[" + this.tamany +  "D";
         final String SET_CURSOR_POSITION = "\033[" + Integer.toString(this.cursor) + "C";
-        System.out.print(SET_CURSOR_BEGINNNING + SET_CURSOR_POSITION);
+        System.out.print(SET_CURSOR_BEGINNNING);
+        
+        if (this.cursor > 0) {
+            System.out.print(SET_CURSOR_POSITION);
+        }
 
         System.out.print(this.insertMode ? BLINKING_BLOCK : BLINKING_BAR);
     }
