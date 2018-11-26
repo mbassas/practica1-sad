@@ -33,22 +33,6 @@ public class EditableBufferedReader extends BufferedReader {
     public static final int SUPR = 126;
     public static final int ESC = 27;
 
-    public static void main(String[] args) throws IOException {
-        // TODO code application logic here
-
-
-        EditableBufferedReader br = new EditableBufferedReader(new InputStreamReader(System.in));
-        String str = "";
-
-        try {
-            str = br.readLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        System.out.println("\nline is: " + str);
-
-    }
-
     public EditableBufferedReader(Reader in) {
         super(in);
     }
