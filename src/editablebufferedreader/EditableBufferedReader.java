@@ -47,6 +47,23 @@ public class EditableBufferedReader extends BufferedReader {
         return read;
     }
 
+    private int nextButton() throws IOException {
+        int button = this.read();
+        if (button == ESC) {
+            button = this.read();
+            button = this.read();
+            
+            // For SUPR button
+            if(button == 51) button = this.read();
+        }
+
+        if (button == INSERT) {
+            this.read();
+        }
+
+        return button;
+    }
+
     public String readLine() throws IOException {
 
         LineRead line = new LineRead();
@@ -55,45 +72,33 @@ public class EditableBufferedReader extends BufferedReader {
             this.console.setRaw();
 
             while (button != ENTER) {
-                button = this.read();
+                button = this.nextButton();
 
                 switch (button) {
 
-                    case (ESC):
-                        button = this.read();
-                        button = this.read();
+                    case (FIN):
+                        line.goToEnd();
+                        break;
 
-                        switch (button) {
-                            case (FIN):
-                                line.goToEnd();
-                                break;
+                    case (INICIO):
+                        line.goHome();
+                        break;
 
-                            case (INICIO):
-                                line.goHome();
-                                break;
+                    case (RIGHT):
+                        line.right();
+                        break;
 
-                            case (RIGHT):
-                                line.right();
-                                break;
+                    case (LEFT):
+                        line.left();
+                        break;
 
-                            case (LEFT):
-                                line.left();
-                                break;
-
-                            case (INSERT):
-                                button = this.read();
-                                line.toggleInsertMode();
-                                break;
-
-                            default:
-                                break;
-                        }
+                    case (INSERT):
+                        line.toggleInsertMode();
                         break;
 
                     case (BACKSPACE):
                         line.delete();
                         line.decPosition();
-
                         break;
 
                     case (SUPR):
