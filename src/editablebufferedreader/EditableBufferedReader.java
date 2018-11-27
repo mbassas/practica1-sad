@@ -95,6 +95,10 @@ public class EditableBufferedReader extends BufferedReader {
                     case (SUPR):
                         line.suppress();
                         break;
+                    
+                    case (ENTER):
+                        line.goToEnd();
+                        break;
 
                     default:
                         line.write(button);
