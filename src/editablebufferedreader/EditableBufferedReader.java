@@ -7,6 +7,7 @@
 package editablebufferedreader;
 
 import editablebufferedreader.LineRead;
+import editablebufferedreader.Console;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -33,31 +34,11 @@ public class EditableBufferedReader extends BufferedReader {
     public static final int SUPR = 126;
     public static final int ESC = 27;
 
+    private Console console;
+
     public EditableBufferedReader(Reader in) {
         super(in);
-    }
-
-    public void setRaw() throws IOException {
-        run("stty -echo raw < /dev/tty");
-    }
-
-    public void unsetRaw() throws IOException {
-        run("stty -raw echo < /dev/tty");
-    }
-    
-    public byte[] run(String command) throws IOException {
-        String[] cmdRaw = {"/bin/sh", "-c", command};
-        try {
-            Process p = Runtime.getRuntime().exec(cmdRaw);
-            p.waitFor();
-
-            byte[] b = new byte[512];
-            p.getInputStream().read(b);
-            return b;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return null;
+        this.console = new Console();
     }
 
     @Override
@@ -71,7 +52,7 @@ public class EditableBufferedReader extends BufferedReader {
         LineRead line = new LineRead();
         try {
             int button = 0;
-            this.setRaw();
+            this.console.setRaw();
 
             while (button != ENTER) {
                 button = this.read();
@@ -135,7 +116,7 @@ public class EditableBufferedReader extends BufferedReader {
 
         } finally {
 
-            this.unsetRaw();
+            this.console.unsetRaw();
         }
     }
 }
