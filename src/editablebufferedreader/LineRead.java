@@ -43,27 +43,16 @@ public class LineRead {
         this.cursor--;
     }
 
-    private String BLINKING_BAR = "\033[5 q";
-    private String BLINKING_BLOCK = "\033[1 q";
-
-    public void setCursor() throws IOException {
-        final String SET_CURSOR_BEGINNNING = "\033[" + this.tamany +  "D";
-        final String SET_CURSOR_POSITION = "\033[" + Integer.toString(this.cursor) + "C";
-        System.out.print(SET_CURSOR_BEGINNNING);
-        
-        if (this.cursor > 0) {
-            System.out.print(SET_CURSOR_POSITION);
-        }
-
-        System.out.print(this.insertMode ? BLINKING_BLOCK : BLINKING_BAR);
-    }
-
     public void showLine() {
-        System.out.print(this.liniaEscrita);
+        this.console.print(this.liniaEscrita);
     }
 
     public String getContent() {
         return this.liniaEscrita;
+    }
+
+    public void setCursor() {
+        this.console.setCursor(this.cursor, this.insertMode);
     }
 
     public void delete() {
@@ -76,10 +65,7 @@ public class LineRead {
     }
 
     public void clearScreen() {
-        final String ANSI_CLEAR_LINE = "\033[K";
-        final String SET_CURSOR_BEGINNNING = "\033[" + this.tamany +  "D"; //SHOUL BE COLS
-        System.out.print(SET_CURSOR_BEGINNNING);
-        System.out.print(ANSI_CLEAR_LINE);
+        this.console.clearLine();
     }
 
     public void suppress() {

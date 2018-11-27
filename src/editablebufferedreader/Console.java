@@ -20,6 +20,32 @@ public class Console {
         }
         return 100; //default total columns value
     }
+
+    public void print(String content) {
+        System.out.print(content);
+    }
+
+    private String BLINKING_BAR = "\033[5 q";
+    private String BLINKING_BLOCK = "\033[1 q";
+
+    public void setCursor(int cursorPosition, boolean insetMode) throws IOException {
+        final String SET_CURSOR_BEGINNNING = "\033[" + this.getSize() +  "D";
+        final String SET_CURSOR_POSITION = "\033[" + Integer.toString(cursorPosition) + "C";
+        System.out.print(SET_CURSOR_BEGINNNING);
+        
+        if (cursorPosition > 0) {
+            System.out.print(SET_CURSOR_POSITION);
+        }
+
+        System.out.print(insertMode ? BLINKING_BLOCK : BLINKING_BAR);
+    }
+
+    public void clearLine() {
+        final String ANSI_CLEAR_LINE = "\033[K";
+        final String SET_CURSOR_BEGINNNING = "\033[" + this.getSize() +  "D";
+        System.out.print(SET_CURSOR_BEGINNNING);
+        System.out.print(ANSI_CLEAR_LINE);
+    }
     
     private int run(String command) throws IOException {
         return run(command, new byte[512]);
