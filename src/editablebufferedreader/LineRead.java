@@ -17,38 +17,21 @@ public class LineRead {
     String liniaEscrita;
     boolean insertMode;
     int cursor;
+    private Console console;
 
     public LineRead() {
         this.insertMode = false;
         this.cursor = 0;
         this.liniaEscrita = "";
+        this.console = new Console();
 
         updateSize();
     }
 
     private void updateSize() {
-        this.tamany = getTerminalSize();
+        this.tamany = this.console.getSize();
     }
-
-    private int getTerminalSize(){
-        String[] consoleSize = {"/bin/sh", "-c", "tput cols < /dev/tty"};
-        try {
-            Process p = Runtime.getRuntime().exec(consoleSize);
-            p.waitFor();
-
-            byte[] b = new byte[10];
-            int bytesRead = p.getInputStream().read(b);
-            if(bytesRead > 0) {
-                String output = new String(b).replace("\n", "").trim();
-                return Integer.parseInt(output);
-            }
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 100; //default total columns value
-    }
-    
+   
 
     public void incPosition() {
         if (this.cursor >= this.liniaEscrita.length()) return;
