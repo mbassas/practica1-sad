@@ -17,38 +17,21 @@ public class LineRead {
     String liniaEscrita;
     boolean insertMode;
     int cursor;
+    private Console console;
 
     public LineRead() {
         this.insertMode = false;
         this.cursor = 0;
         this.liniaEscrita = "";
+        this.console = new Console();
 
         updateSize();
     }
 
     private void updateSize() {
-        this.tamany = getTerminalSize();
+        this.tamany = this.console.getSize();
     }
-
-    private int getTerminalSize(){
-        String[] consoleSize = {"/bin/sh", "-c", "tput cols < /dev/tty"};
-        try {
-            Process p = Runtime.getRuntime().exec(consoleSize);
-            p.waitFor();
-
-            byte[] b = new byte[10];
-            int bytesRead = p.getInputStream().read(b);
-            if(bytesRead > 0) {
-                String output = new String(b).replace("\n", "").trim();
-                return Integer.parseInt(output);
-            }
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 100; //default total columns value
-    }
-    
+   
 
     public void incPosition() {
         if (this.cursor >= this.liniaEscrita.length()) return;
@@ -60,27 +43,16 @@ public class LineRead {
         this.cursor--;
     }
 
-    private String BLINKING_BAR = "\033[5 q";
-    private String BLINKING_BLOCK = "\033[1 q";
-
-    public void setCursor() throws IOException {
-        final String SET_CURSOR_BEGINNNING = "\033[" + this.tamany +  "D";
-        final String SET_CURSOR_POSITION = "\033[" + Integer.toString(this.cursor) + "C";
-        System.out.print(SET_CURSOR_BEGINNNING);
-        
-        if (this.cursor > 0) {
-            System.out.print(SET_CURSOR_POSITION);
-        }
-
-        System.out.print(this.insertMode ? BLINKING_BLOCK : BLINKING_BAR);
-    }
-
     public void showLine() {
-        System.out.print(this.liniaEscrita);
+        this.console.print(this.liniaEscrita);
     }
 
     public String getContent() {
         return this.liniaEscrita;
+    }
+
+    public void setCursor() throws IOException {
+        this.console.setCursor(this.cursor, this.insertMode);
     }
 
     public void delete() {
@@ -93,10 +65,7 @@ public class LineRead {
     }
 
     public void clearScreen() {
-        final String ANSI_CLEAR_LINE = "\033[K";
-        final String SET_CURSOR_BEGINNNING = "\033[" + this.tamany +  "D"; //SHOUL BE COLS
-        System.out.print(SET_CURSOR_BEGINNNING);
-        System.out.print(ANSI_CLEAR_LINE);
+        this.console.clearLine();
     }
 
     public void suppress() {
@@ -145,5 +114,13 @@ public class LineRead {
             this.liniaEscrita += sortida;
         }
 
+    }
+
+    public void setRawMode() throws IOException {
+        this.console.setRaw();
+    }
+
+    public void setCookedMode() throws IOException {
+        this.console.unsetRaw();
     }
 }

@@ -7,6 +7,7 @@
 package editablebufferedreader;
 
 import editablebufferedreader.LineRead;
+import editablebufferedreader.Console;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -37,33 +38,21 @@ public class EditableBufferedReader extends BufferedReader {
         super(in);
     }
 
-    public void setRaw() throws IOException {
-        run("stty -echo raw < /dev/tty");
-    }
-
-    public void unsetRaw() throws IOException {
-        run("stty -raw echo < /dev/tty");
-    }
-    
-    public byte[] run(String command) throws IOException {
-        String[] cmdRaw = {"/bin/sh", "-c", command};
-        try {
-            Process p = Runtime.getRuntime().exec(cmdRaw);
-            p.waitFor();
-
-            byte[] b = new byte[512];
-            p.getInputStream().read(b);
-            return b;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    private int nextButton() throws IOException {
+        int button = this.read();
+        if (button == ESC) {
+            button = this.read();
+            button = this.read();
+            
+            // For SUPR button
+            if(button == 51) button = this.read();
         }
-        return null;
-    }
 
-    @Override
-    public int read() throws IOException {
-        int read = System.in.read();
-        return read;
+        if (button == INSERT) {
+            this.read();
+        }
+
+        return button;
     }
 
     public String readLine() throws IOException {
@@ -71,52 +60,44 @@ public class EditableBufferedReader extends BufferedReader {
         LineRead line = new LineRead();
         try {
             int button = 0;
-            this.setRaw();
+            line.setRawMode();
 
             while (button != ENTER) {
-                button = this.read();
+                button = this.nextButton();
 
                 switch (button) {
 
-                    case (ESC):
-                        button = this.read();
-                        button = this.read();
+                    case (FIN):
+                        line.goToEnd();
+                        break;
 
-                        switch (button) {
-                            case (FIN):
-                                line.goToEnd();
-                                break;
+                    case (INICIO):
+                        line.goHome();
+                        break;
 
-                            case (INICIO):
-                                line.goHome();
-                                break;
+                    case (RIGHT):
+                        line.right();
+                        break;
 
-                            case (RIGHT):
-                                line.right();
-                                break;
+                    case (LEFT):
+                        line.left();
+                        break;
 
-                            case (LEFT):
-                                line.left();
-                                break;
-
-                            case (INSERT):
-                                button = this.read();
-                                line.toggleInsertMode();
-                                break;
-
-                            default:
-                                break;
-                        }
+                    case (INSERT):
+                        line.toggleInsertMode();
                         break;
 
                     case (BACKSPACE):
                         line.delete();
                         line.decPosition();
-
                         break;
 
                     case (SUPR):
                         line.suppress();
+                        break;
+                    
+                    case (ENTER):
+                        line.goToEnd();
                         break;
 
                     default:
@@ -130,12 +111,11 @@ public class EditableBufferedReader extends BufferedReader {
                 line.setCursor();
             }
 
-            line.clearScreen();
             return line.getContent();
 
         } finally {
 
-            this.unsetRaw();
+            line.setCookedMode();
         }
     }
 }
