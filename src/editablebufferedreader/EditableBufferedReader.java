@@ -41,12 +41,6 @@ public class EditableBufferedReader extends BufferedReader {
         this.console = new Console();
     }
 
-    @Override
-    public int read() throws IOException {
-        int read = System.in.read();
-        return read;
-    }
-
     private int nextButton() throws IOException {
         int button = this.read();
         if (button == ESC) {
@@ -116,7 +110,6 @@ public class EditableBufferedReader extends BufferedReader {
                 line.setCursor();
             }
 
-            line.clearScreen();
             return line.getContent();
 
         } finally {
