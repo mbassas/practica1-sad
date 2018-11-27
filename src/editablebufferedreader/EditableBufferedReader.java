@@ -34,11 +34,8 @@ public class EditableBufferedReader extends BufferedReader {
     public static final int SUPR = 126;
     public static final int ESC = 27;
 
-    private Console console;
-
     public EditableBufferedReader(Reader in) {
         super(in);
-        this.console = new Console();
     }
 
     private int nextButton() throws IOException {
@@ -63,7 +60,7 @@ public class EditableBufferedReader extends BufferedReader {
         LineRead line = new LineRead();
         try {
             int button = 0;
-            this.console.setRaw();
+            line.setRawMode();
 
             while (button != ENTER) {
                 button = this.nextButton();
@@ -114,7 +111,7 @@ public class EditableBufferedReader extends BufferedReader {
 
         } finally {
 
-            this.console.unsetRaw();
+            line.setCookedMode();
         }
     }
 }

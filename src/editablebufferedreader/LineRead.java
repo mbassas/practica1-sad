@@ -51,7 +51,7 @@ public class LineRead {
         return this.liniaEscrita;
     }
 
-    public void setCursor() {
+    public void setCursor() throws IOException {
         this.console.setCursor(this.cursor, this.insertMode);
     }
 
@@ -114,5 +114,13 @@ public class LineRead {
             this.liniaEscrita += sortida;
         }
 
+    }
+
+    public void setRawMode() throws IOException {
+        this.console.setRaw();
+    }
+
+    public void setCookedMode() throws IOException {
+        this.console.unsetRaw();
     }
 }
